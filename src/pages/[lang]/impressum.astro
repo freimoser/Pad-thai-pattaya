@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Lang } from '../../data/restaurants';
+import { t } from '../../data/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'de' } }, { params: { lang: 'en' } }, { params: { lang: 'th' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const ui = t(lang);
+---
+
+<BaseLayout lang={lang} title={ui.impressumTitle} description={ui.metaImpressum} path="impressum">
+  <div class="max-w-3xl mx-auto px-4 py-12">
+    <h1 class="text-3xl md:text-4xl mb-6">{ui.impressumTitle}</h1>
+    <div class="bg-white rounded-2xl border border-pad-100 p-8 shadow-sm space-y-4 text-stone-700">
+      <p class="m-0 leading-relaxed">{ui.impressumBody}</p>
+      <p class="m-0 leading-relaxed font-semibold text-ink">{ui.impressumContact}</p>
+      <p class="m-0 leading-relaxed">{ui.impressumLocation}</p>
+      <hr class="border-pad-100" />
+      <p class="m-0 text-sm">
+        Website: <a href="https://Freemoser.github.io/pad-thai-pattaya/" class="text-pad-700">Freemoser.github.io/pad-thai-pattaya</a>
+      </p>
+      <p class="m-0 text-sm">
+        GitHub: <a href="https://github.com/Freemoser/pad-thai-pattaya" class="text-pad-700">github.com/Freemoser/pad-thai-pattaya</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>

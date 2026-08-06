@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RestaurantCard from '../../components/RestaurantCard.astro';
+import { restaurants, honorableMentions } from '../../data/restaurants';
+import type { Lang } from '../../data/restaurants';
+import { t, areaSlugs } from '../../data/ui';
+import { langPath } from '../../utils/paths';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'de' } }, { params: { lang: 'en' } }, { params: { lang: 'th' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const ui = t(lang);
+const preview = restaurants.slice(0, 6);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: ui.siteName,
+  url: new URL(langPath(lang).replace(/^\//, ''), Astro.site).href,
+  description: ui.metaHome,
+  inLanguage: lang,
+  about: {
+    '@type': 'Place',
+    name: 'Pattaya',
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 12.9236,
+      longitude: 100.8825,
+    },
+  },
+};
+---
+
+<BaseLayout lang={lang} title={`${ui.heroTitle} | ${ui.siteName}`} description={ui.metaHome} schema={schema}>
+  <section class="hero-gradient">
+    <div class="max-w-6xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <p class="text-pad-600 font-bold uppercase tracking-wider text-sm m-0">Pattaya · Thailand</p>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-ink mt-3 mb-4">{ui.heroTitle}</h1>
+        <p class="text-lg text-stone-700 mb-8 max-w-xl">{ui.heroSubtitle}</p>
+        <div class="flex flex-wrap gap-3">
+          <a href={langPath(lang, 'top-10')} class="btn-primary">{ui.heroCta} →</a>
+          <a href={langPath(lang, 'areas/jomtien')} class="btn-outline">{ui.heroSecondary}</a>
+        </div>
+      </div>
+      <div class="relative flex justify-center" aria-hidden="true">
+        <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-pad-400 via-gold-400 to-pad-700 shadow-2xl flex items-center justify-center text-[7rem] md:text-[9rem] select-none">
+          🍜
+        </div>
+        <div class="absolute -bottom-2 right-8 md:right-16 bg-white rounded-2xl shadow-lg px-4 py-3 border border-pad-100">
+          <p class="m-0 text-xs text-stone-500 font-semibold">TOP 10</p>
+          <p class="m-0 text-2xl font-black text-pad-600">⭐ 4.0–4.7</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-14">
+    <div class="flex items-end justify-between gap-4 mb-8">
+      <div>
+        <h2 class="text-2xl md:text-3xl m-0">{ui.homePreview}</h2>
+        <p class="text-stone-600 mt-2 mb-0">{ui.top10Intro}</p>
+      </div>
+      <a href={langPath(lang, 'top-10')} class="btn-outline text-sm shrink-0 no-print">{ui.seeAll}</a>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {preview.map((r) => (
+        <RestaurantCard restaurant={r} lang={lang} compact />
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-pad-50 border-y border-pad-100">
+    <div class="max-w-6xl mx-auto px-4 py-14">
+      <h2 class="text-2xl md:text-3xl m-0 mb-2">{ui.areasTitle}</h2>
+      <p class="text-stone-600 mb-8">{ui.areasIntro}</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {areaSlugs.map((slug) => (
+          <a
+            href={langPath(lang, `areas/${slug}`)}
+            class="block bg-white rounded-xl p-5 border border-pad-100 no-underline text-ink card-hover"
+          >
+            <span class="text-2xl" aria-hidden="true">📍</span>
+            <h3 class="text-lg font-bold mt-2 mb-1">{ui.areaNames[slug]}</h3>
+            <p class="text-sm text-stone-600 m-0 line-clamp-2">{ui.areaDescriptions[slug]}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-14">
+    <h2 class="text-2xl md:text-3xl m-0 mb-2">{ui.honorableTitle}</h2>
+    <p class="text-stone-600 mb-6">{ui.honorableIntro}</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      {honorableMentions.map((m) => (
+        <div class="bg-white rounded-xl border border-pad-100 p-5 flex gap-4 items-start">
+          <span class="text-3xl" aria-hidden="true">🌙</span>
+          <div>
+            <h3 class="m-0 text-lg font-bold">{m.name[lang]}</h3>
+            <p class="text-sm text-stone-600 mt-1 mb-3">{m.description[lang]}</p>
+            <a href={m.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline text-xs py-1.5 px-3">
+              📍 Maps
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

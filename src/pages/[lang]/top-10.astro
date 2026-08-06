@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RestaurantCard from '../../components/RestaurantCard.astro';
+import { restaurants, honorableMentions } from '../../data/restaurants';
+import type { Lang } from '../../data/restaurants';
+import { t } from '../../data/ui';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'de' } }, { params: { lang: 'en' } }, { params: { lang: 'th' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const ui = t(lang);
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: ui.top10Title,
+  description: ui.metaTop10,
+  numberOfItems: restaurants.length,
+  itemListElement: restaurants.map((r) => ({
+    '@type': 'ListItem',
+    position: r.rank,
+    item: {
+      '@type': 'Restaurant',
+      name: r.name,
+      servesCuisine: 'Thai',
+      priceRange: '$'.repeat(r.priceLevel),
+      ...(r.rating != null && {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: r.rating,
+          reviewCount: r.reviews ?? 1,
+          bestRating: 5,
+        },
+      }),
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: r.lat,
+        longitude: r.lng,
+      },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Pattaya',
+        addressRegion: 'Chonburi',
+        addressCountry: 'TH',
+        streetAddress: r.address.en,
+      },
+      url: r.mapsUrl,
+    },
+  })),
+};
+---
+
+<BaseLayout lang={lang} title={ui.top10Title} description={ui.metaTop10} path="top-10" schema={itemList}>
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-10">
+      <p class="text-pad-600 font-bold text-sm uppercase tracking-wider m-0">Pattaya Food Guide</p>
+      <h1 class="text-3xl md:text-4xl mt-2 mb-3">{ui.top10Title}</h1>
+      <p class="text-stone-600 text-lg max-w-3xl m-0">{ui.top10Intro}</p>
+    </header>
+
+    <div class="grid sm:grid-cols-2 gap-6">
+      {restaurants.map((r) => (
+        <RestaurantCard restaurant={r} lang={lang} />
+      ))}
+    </div>
+
+    <section class="mt-16">
+      <h2 class="text-2xl mb-2">{ui.honorableTitle}</h2>
+      <p class="text-stone-600 mb-6">{ui.honorableIntro}</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        {honorableMentions.map((m) => (
+          <div class="bg-white rounded-xl border border-pad-100 p-5">
+            <h3 class="m-0 text-lg font-bold">{m.name[lang]}</h3>
+            <p class="text-sm text-stone-600 mt-2 mb-3">{m.description[lang]}</p>
+            <a href={m.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline text-sm py-2 px-4">
+              📍 {ui.openMaps}
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

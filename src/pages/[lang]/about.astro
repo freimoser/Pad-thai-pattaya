@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Lang } from '../../data/restaurants';
+import { t } from '../../data/ui';
+import { langPath } from '../../utils/paths';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'de' } }, { params: { lang: 'en' } }, { params: { lang: 'th' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const ui = t(lang);
+---
+
+<BaseLayout lang={lang} title={ui.aboutTitle} description={ui.metaAbout} path="about">
+  <div class="max-w-3xl mx-auto px-4 py-12">
+    <h1 class="text-3xl md:text-4xl mb-6">{ui.aboutTitle}</h1>
+    <div class="bg-white rounded-2xl border border-pad-100 p-8 shadow-sm space-y-6">
+      <p class="text-lg text-stone-700 m-0 leading-relaxed">{ui.aboutBody}</p>
+      <p class="text-lg font-semibold text-pad-800 m-0 leading-relaxed">{ui.aboutMission}</p>
+      <ul class="text-stone-700 space-y-2 m-0 pl-5">
+        <li>🍜 Focus: Pad Thai in Pattaya</li>
+        <li>⭐ Ratings: TripAdvisor-based where available</li>
+        <li>🗺️ Maps: Google Maps links for every spot</li>
+        <li>🌐 Languages: Deutsch · English · ไทย</li>
+        <li>🚫 No paid rankings, no affiliate links</li>
+      </ul>
+      <a href={langPath(lang, 'top-10')} class="btn-primary inline-flex">{ui.heroCta} →</a>
+    </div>
+  </div>
+</BaseLayout>

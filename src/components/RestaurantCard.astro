@@ -1,0 +1,69 @@
+---
+import type { Restaurant, Lang } from '../data/restaurants';
+import { t } from '../data/ui';
+import { langPath } from '../utils/paths';
+import StarRating from './StarRating.astro';
+import PriceLevel from './PriceLevel.astro';
+
+interface Props {
+  restaurant: Restaurant;
+  lang: Lang;
+  compact?: boolean;
+}
+
+const { restaurant: r, lang, compact = false } = Astro.props;
+const ui = t(lang);
+const href = langPath(lang, `restaurant/${r.slug}`);
+---
+
+<article class="card-hover bg-white rounded-2xl border border-pad-100 shadow-sm overflow-hidden flex flex-col">
+  <div class="p-5 flex flex-col gap-3 flex-1">
+    <div class="flex items-start gap-3">
+      <div class="rank-badge shrink-0 text-sm">{r.rank}</div>
+      <div class="min-w-0 flex-1">
+        <h3 class="text-lg font-bold text-ink m-0">
+          <a href={href} class="no-underline text-inherit hover:text-pad-600">{r.name}</a>
+        </h3>
+        {r.award && (
+          <span class="inline-block mt-1 text-xs font-bold text-gold-600">🏆 {ui.travellersChoice}</span>
+        )}
+        <p class="text-sm text-pad-700 font-medium mt-1 m-0">{r.highlight[lang]}</p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 text-sm">
+      {r.rating != null && (
+        <StarRating rating={r.rating} />
+      )}
+      {r.reviews != null && (
+        <span class="text-stone-500">({r.reviews} {ui.reviews})</span>
+      )}
+      <PriceLevel level={r.priceLevel} />
+    </div>
+
+    <div class="flex flex-wrap gap-1.5">
+      {r.tags.map((tag) => (
+        <span class="tag">{tag}</span>
+      ))}
+      <span class="tag">{ui.areaNames[r.area]}</span>
+    </div>
+
+    {!compact && (
+      <p class="text-sm text-stone-600 m-0 line-clamp-3">{r.description[lang]}</p>
+    )}
+
+    {r.pricePadThaiTHB && (
+      <p class="text-sm m-0">
+        <span class="font-semibold text-pad-800">{ui.padThaiPrice}</span>
+        {' '}{r.pricePadThaiTHB} {ui.thb}
+      </p>
+    )}
+
+    <div class="mt-auto pt-3 flex flex-wrap gap-2">
+      <a href={href} class="btn-primary text-sm py-2 px-4">{ui.viewDetails}</a>
+      <a href={r.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline text-sm py-2 px-4">
+        📍 Maps
+      </a>
+    </div>
+  </div>
+</article>

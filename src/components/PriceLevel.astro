@@ -1,0 +1,13 @@
+---
+interface Props {
+  level: 1 | 2 | 3;
+}
+
+const { level } = Astro.props;
+---
+
+<span class="inline-flex font-bold tracking-tight" aria-label={`${level} of 3`}>
+  {Array.from({ length: 3 }).map((_, i) => (
+    <span class={i < level ? 'text-pad-600' : 'text-stone-300'}>$</span>
+  ))}
+</span>

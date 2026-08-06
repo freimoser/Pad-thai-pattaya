@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RestaurantCard from '../../../components/RestaurantCard.astro';
+import { getByArea, honorableMentions } from '../../../data/restaurants';
+import type { Lang } from '../../../data/restaurants';
+import { t, areaSlugs, type AreaSlug } from '../../../data/ui';
+import { langPath } from '../../../utils/paths';
+
+export function getStaticPaths() {
+  const langs: Lang[] = ['de', 'en', 'th'];
+  return langs.flatMap((lang) =>
+    areaSlugs.map((area) => ({
+      params: { lang, area },
+    }))
+  );
+}
+
+const lang = Astro.params.lang as Lang;
+const area = Astro.params.area as AreaSlug;
+const ui = t(lang);
+const list = getByArea(area);
+const mentions = honorableMentions.filter((m) => m.area === area);
+const title = `${ui.metaArea} ${ui.areaNames[area]}`;
+const description = ui.areaDescriptions[area];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  about: {
+    '@type': 'Place',
+    name: ui.areaNames[area],
+    containedInPlace: {
+      '@type': 'City',
+      name: 'Pattaya',
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 12.9236,
+        longitude: 100.8825,
+      },
+    },
+  },
+};
+---
+
+<BaseLayout lang={lang} title={title} description={description} path={`areas/${area}`} schema={schema}>
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <nav class="flex flex-wrap gap-2 mb-8 no-print" aria-label="Areas">
+      {areaSlugs.map((s) => (
+        <a
+          href={langPath(lang, `areas/${s}`)}
+          class:list={[
+            'px-3 py-1.5 rounded-full text-sm font-semibold no-underline',
+            s === area ? 'bg-pad-500 text-white' : 'bg-pad-100 text-pad-800 hover:bg-pad-200',
+          ]}
+        >
+          {ui.areaNames[s]}
+        </a>
+      ))}
+    </nav>
+
+    <header class="mb-10">
+      <p class="text-pad-600 font-bold text-sm uppercase tracking-wider m-0">{ui.areasTitle}</p>
+      <h1 class="text-3xl md:text-4xl mt-2 mb-3">{ui.areaNames[area]}</h1>
+      <p class="text-stone-600 text-lg max-w-3xl m-0">{description}</p>
+    </header>
+
+    {list.length > 0 ? (
+      <div class="grid sm:grid-cols-2 gap-6">
+        {list.map((r) => (
+          <RestaurantCard restaurant={r} lang={lang} />
+        ))}
+      </div>
+    ) : (
+      <p class="text-stone-600">{ui.honorableIntro}</p>
+    )}
+
+    {mentions.length > 0 && (
+      <section class="mt-12">
+        <h2 class="text-2xl mb-4">{ui.honorableTitle}</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          {mentions.map((m) => (
+            <div class="bg-white rounded-xl border border-pad-100 p-5">
+              <h3 class="m-0 text-lg font-bold">{m.name[lang]}</h3>
+              <p class="text-sm text-stone-600 mt-2 mb-3">{m.description[lang]}</p>
+              <a href={m.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline text-sm py-2 px-4">
+                📍 {ui.openMaps}
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="mt-12">
+      <a href={langPath(lang, 'top-10')} class="btn-primary">{ui.seeAll} →</a>
+    </div>
+  </div>
+</BaseLayout>

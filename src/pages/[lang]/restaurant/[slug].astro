@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import StarRating from '../../../components/StarRating.astro';
+import PriceLevel from '../../../components/PriceLevel.astro';
+import RestaurantCard from '../../../components/RestaurantCard.astro';
+import { restaurants, getRestaurant, getByArea } from '../../../data/restaurants';
+import type { Lang } from '../../../data/restaurants';
+import { t } from '../../../data/ui';
+import { langPath } from '../../../utils/paths';
+
+export function getStaticPaths() {
+  const langs: Lang[] = ['de', 'en', 'th'];
+  return langs.flatMap((lang) =>
+    restaurants.map((r) => ({
+      params: { lang, slug: r.slug },
+    }))
+  );
+}
+
+const lang = Astro.params.lang as Lang;
+const slug = Astro.params.slug as string;
+const r = getRestaurant(slug)!;
+const ui = t(lang);
+const related = getByArea(r.area).filter((x) => x.slug !== r.slug).slice(0, 3);
+const embedUrl = `https://maps.google.com/maps?q=${r.lat},${r.lng}&z=16&output=embed`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  '@id': new URL(langPath(lang, `restaurant/${r.slug}`).replace(/^\//, ''), Astro.site).href,
+  name: r.name,
+  description: r.description.en,
+  servesCuisine: ['Thai', 'Pad Thai'],
+  priceRange: '$'.repeat(r.priceLevel),
+  telephone: r.phone,
+  url: r.mapsUrl,
+  image: 'https://Freemoser.github.io/pad-thai-pattaya/og-default.svg',
+  ...(r.rating != null && {
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: r.rating,
+      reviewCount: r.reviews ?? 1,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  }),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: r.address.en,
+    addressLocality: 'Pattaya',
+    addressRegion: 'Chonburi',
+    addressCountry: 'TH',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: r.lat,
+    longitude: r.lng,
+  },
+  hasMenu: {
+    '@type': 'Menu',
+    hasMenuSection: {
+      '@type': 'MenuSection',
+      name: 'Pad Thai',
+      hasMenuItem: {
+        '@type': 'MenuItem',
+        name: 'Pad Thai',
+        ...(r.pricePadThaiTHB && {
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'THB',
+            price: r.pricePadThaiTHB.split('–')[0].trim(),
+          },
+        }),
+      },
+    },
+  },
+};
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${r.rank}. ${r.name} – Pad Thai Pattaya`}
+  description={r.description[lang].slice(0, 155)}
+  path={`restaurant/${r.slug}`}
+  type="article"
+  schema={schema}
+>
+  <article class="max-w-4xl mx-auto px-4 py-12">
+    <a href={langPath(lang, 'top-10')} class="text-sm font-semibold text-pad-700 no-underline hover:underline no-print">
+      ← {ui.backToList}
+    </a>
+
+    <header class="mt-4 mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="rank-badge">#{r.rank}</div>
+        {r.award && <span class="text-sm font-bold text-gold-600">🏆 {ui.travellersChoice}</span>}
+      </div>
+      <h1 class="text-3xl md:text-4xl m-0 mb-2">{r.name}</h1>
+      <p class="text-lg text-pad-700 font-semibold m-0">{r.highlight[lang]}</p>
+    </header>
+
+    <div class="flex flex-wrap gap-4 items-center mb-6 text-sm">
+      {r.rating != null && (
+        <div class="flex items-center gap-2">
+          <StarRating rating={r.rating} />
+          {r.reviews != null && <span class="text-stone-500">({r.reviews} {ui.reviews})</span>}
+        </div>
+      )}
+      <div class="flex items-center gap-2">
+        <span class="font-semibold">{ui.price}:</span>
+        <PriceLevel level={r.priceLevel} />
+      </div>
+      {r.pricePadThaiTHB && (
+        <div>
+          <span class="font-semibold">{ui.padThaiPrice}</span> {r.pricePadThaiTHB} {ui.thb}
+        </div>
+      )}
+    </div>
+
+    <div class="flex flex-wrap gap-1.5 mb-8">
+      {r.tags.map((tag) => <span class="tag">{tag}</span>)}
+      <span class="tag">{ui.areaNames[r.area]}</span>
+    </div>
+
+    <div class="prose max-w-none mb-8">
+      <p class="text-lg text-stone-700 leading-relaxed">{r.description[lang]}</p>
+    </div>
+
+    <dl class="grid sm:grid-cols-2 gap-4 bg-pad-50 rounded-2xl p-6 border border-pad-100 mb-8">
+      <div>
+        <dt class="text-xs font-bold uppercase text-stone-500 m-0">{ui.cuisine}</dt>
+        <dd class="m-0 mt-1 font-semibold">{r.cuisine[lang]}</dd>
+      </div>
+      <div>
+        <dt class="text-xs font-bold uppercase text-stone-500 m-0">{ui.area}</dt>
+        <dd class="m-0 mt-1 font-semibold">
+          <a href={langPath(lang, `areas/${r.area}`)} class="text-pad-700">{ui.areaNames[r.area]}</a>
+        </dd>
+      </div>
+      <div class="sm:col-span-2">
+        <dt class="text-xs font-bold uppercase text-stone-500 m-0">{ui.address}</dt>
+        <dd class="m-0 mt-1 font-semibold">{r.address[lang]}</dd>
+      </div>
+      {r.phone && (
+        <div>
+          <dt class="text-xs font-bold uppercase text-stone-500 m-0">{ui.phone}</dt>
+          <dd class="m-0 mt-1 font-semibold">
+            <a href={`tel:${r.phone.replace(/\s/g, '')}`} class="text-pad-700">{r.phone}</a>
+          </dd>
+        </div>
+      )}
+      <div>
+        <dt class="text-xs font-bold uppercase text-stone-500 m-0">{ui.highlight}</dt>
+        <dd class="m-0 mt-1 font-semibold">{r.highlight[lang]}</dd>
+      </div>
+    </dl>
+
+    <div class="mb-4 flex flex-wrap gap-3 no-print">
+      <a href={r.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-primary">
+        📍 {ui.openMaps}
+      </a>
+      <a href={r.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline">
+        {ui.ctaMaps}
+      </a>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden border border-pad-100 shadow-sm mb-12">
+      <iframe
+        class="map-embed"
+        src={embedUrl}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title={`Map: ${r.name}`}
+        allowfullscreen
+      />
+    </div>
+
+    {related.length > 0 && (
+      <section>
+        <h2 class="text-2xl mb-6">{ui.relatedArea}</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {related.map((item) => (
+            <RestaurantCard restaurant={item} lang={lang} compact />
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>

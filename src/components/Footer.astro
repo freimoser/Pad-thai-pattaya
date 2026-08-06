@@ -1,0 +1,39 @@
+---
+import type { Lang } from '../data/restaurants';
+import { t } from '../data/ui';
+import { langPath } from '../utils/paths';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-pad-200 bg-pad-900 text-pad-100 no-print">
+  <div class="max-w-6xl mx-auto px-4 py-10 grid gap-8 sm:grid-cols-3">
+    <div>
+      <p class="text-xl font-bold text-white">🍜 {ui.siteName}</p>
+      <p class="mt-2 text-sm text-pad-200">{ui.siteTagline}</p>
+      <p class="mt-3 text-xs text-pad-300">{ui.footerRights}</p>
+    </div>
+    <div>
+      <p class="font-semibold text-white mb-2">{ui.navTop10}</p>
+      <ul class="space-y-1 text-sm">
+        <li><a class="text-pad-200 hover:text-white no-underline" href={langPath(lang, 'top-10')}>{ui.allRestaurants}</a></li>
+        <li><a class="text-pad-200 hover:text-white no-underline" href={langPath(lang, 'areas/jomtien')}>{ui.navAreas}</a></li>
+        <li><a class="text-pad-200 hover:text-white no-underline" href={langPath(lang, 'about')}>{ui.navAbout}</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="font-semibold text-white mb-2">{ui.navImpressum}</p>
+      <ul class="space-y-1 text-sm">
+        <li><a class="text-pad-200 hover:text-white no-underline" href={langPath(lang, 'impressum')}>{ui.navImpressum}</a></li>
+        <li class="text-pad-300 text-xs mt-2">Pattaya · 12.9236°N, 100.8825°E</li>
+        <li class="text-pad-300 text-xs">© {year} {ui.siteName}</li>
+      </ul>
+    </div>
+  </div>
+</footer>

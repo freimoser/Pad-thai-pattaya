@@ -1,0 +1,29 @@
+---
+interface Props {
+  rating?: number;
+  max?: number;
+  showValue?: boolean;
+}
+
+const { rating = 0, max = 5, showValue = true } = Astro.props;
+const full = Math.floor(rating);
+const hasHalf = rating - full >= 0.3 && rating - full < 0.8;
+const empty = max - full - (hasHalf ? 1 : rating - full >= 0.8 ? 1 : 0);
+const actualFull = rating - full >= 0.8 ? full + 1 : full;
+const actualEmpty = max - actualFull - (hasHalf && rating - full < 0.8 ? 1 : 0);
+---
+
+<span class="inline-flex items-center gap-1" aria-label={`${rating} / ${max}`}>
+  {Array.from({ length: actualFull }).map(() => (
+    <span class="star-filled" aria-hidden="true">★</span>
+  ))}
+  {hasHalf && rating - full < 0.8 && (
+    <span class="star-filled opacity-70" aria-hidden="true">★</span>
+  )}
+  {Array.from({ length: Math.max(0, max - actualFull - (hasHalf && rating - full < 0.8 ? 1 : 0)) }).map(() => (
+    <span class="star-empty" aria-hidden="true">★</span>
+  ))}
+  {showValue && rating > 0 && (
+    <span class="ml-1 text-sm font-semibold text-ink">{rating.toFixed(1)}</span>
+  )}
+</span>

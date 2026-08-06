@@ -1,0 +1,78 @@
+---
+import type { Lang } from '../data/restaurants';
+import { t, languages } from '../data/ui';
+import { langPath, switchLangPath } from '../utils/paths';
+
+interface Props {
+  lang: Lang;
+  currentPath?: string;
+}
+
+const { lang, currentPath = '' } = Astro.props;
+const ui = t(lang);
+const pathname = Astro.url.pathname;
+
+const links = [
+  { href: langPath(lang), label: ui.navHome, match: '' },
+  { href: langPath(lang, 'top-10'), label: ui.navTop10, match: 'top-10' },
+  { href: langPath(lang, 'areas/jomtien'), label: ui.navAreas, match: 'areas' },
+  { href: langPath(lang, 'about'), label: ui.navAbout, match: 'about' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-pad-200 no-print">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <a href={langPath(lang)} class="flex items-center gap-2 no-underline text-ink">
+      <span class="text-2xl" aria-hidden="true">🍜</span>
+      <span class="font-bold text-lg leading-tight">
+        {ui.siteName}
+        <span class="block text-xs font-medium text-pad-600">{ui.siteTagline}</span>
+      </span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main">
+      {links.map((l) => {
+        const active =
+          l.match === ''
+            ? pathname.endsWith(`/${lang}/`) || pathname.endsWith(`/${lang}`)
+            : pathname.includes(`/${l.match}`);
+        return (
+          <a
+            href={l.href}
+            class:list={[
+              'px-3 py-2 rounded-full text-sm font-semibold no-underline transition-colors',
+              active ? 'bg-pad-500 text-white' : 'text-ink hover:bg-pad-100',
+            ]}
+          >
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <div class="flex items-center gap-1" role="navigation" aria-label="Language">
+      {languages.map((l) => (
+        <a
+          href={switchLangPath(pathname, l.code)}
+          class:list={[
+            'px-2 py-1 rounded-md text-sm no-underline font-semibold',
+            l.code === lang ? 'bg-pad-100 text-pad-800' : 'opacity-70 hover:opacity-100',
+          ]}
+          hreflang={l.code}
+          title={l.label}
+        >
+          <span aria-hidden="true">{l.flag}</span>
+          <span class="sr-only md:not-sr-only md:inline ml-0.5 uppercase text-xs">{l.code}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <nav class="md:hidden flex overflow-x-auto gap-1 px-4 pb-3" aria-label="Mobile">
+    {links.map((l) => (
+      <a href={l.href} class="shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-pad-100 text-pad-800 no-underline">
+        {l.label}
+      </a>
+    ))}
+  </nav>
+</header>
