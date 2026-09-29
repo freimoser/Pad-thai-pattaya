@@ -47,7 +47,7 @@ export const ui = {
     impressumTitle: 'Impressum & Kontakt',
     impressumBody:
       'Dieses Projekt ist ein redaktioneller Food-Guide mit Fokus auf Pattaya, Thailand. Angaben zu Restaurants können sich ändern – bitte Öffnungszeiten und Preise vor Ort prüfen.',
-    impressumContact: 'Kontakt über GitHub: Freemoser/pad-thai-pattaya',
+    impressumContact: 'Kontakt über GitHub: freimoser/pad-thai-pattaya',
     impressumLocation: 'Bezugsort: Pattaya, Chonburi, Thailand (12.9236° N, 100.8825° E)',
     footerRights: 'Unabhängiger Food Guide · Keine Affiliate-Links',
     allRestaurants: 'Alle Restaurants',
@@ -130,7 +130,7 @@ export const ui = {
     impressumTitle: 'Legal & Contact',
     impressumBody:
       'This project is an editorial food guide focused on Pattaya, Thailand. Restaurant details may change — please verify hours and prices on site.',
-    impressumContact: 'Contact via GitHub: Freemoser/pad-thai-pattaya',
+    impressumContact: 'Contact via GitHub: freimoser/pad-thai-pattaya',
     impressumLocation: 'Reference location: Pattaya, Chonburi, Thailand (12.9236° N, 100.8825° E)',
     footerRights: 'Independent food guide · No affiliate links',
     allRestaurants: 'All restaurants',
@@ -213,7 +213,7 @@ export const ui = {
     impressumTitle: 'ข้อมูลกฎหมายและติดต่อ',
     impressumBody:
       'โปรเจกต์นี้เป็นคู่มืออาหารเชิงบรรณาธิการ โฟกัสพัทยา ประเทศไทย รายละเอียดร้านอาจเปลี่ยน — โปรดตรวจเวลาเปิดและราคาก่อนที่ร้าน',
-    impressumContact: 'ติดต่อผ่าน GitHub: Freemoser/pad-thai-pattaya',
+    impressumContact: 'ติดต่อผ่าน GitHub: freimoser/pad-thai-pattaya',
     impressumLocation: 'พิกัดอ้างอิง: พัทยา ชลบุรี ประเทศไทย (12.9236° N, 100.8825° E)',
     footerRights: 'คู่มืออาหารอิสระ · ไม่มีลิงก์แอฟฟิลิเอต',
     allRestaurants: 'ร้านทั้งหมด',

@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://Freemoser.github.io',
+  site: 'https://freimoser.github.io',
   base: '/pad-thai-pattaya/',
   trailingSlash: 'always',
   i18n: {

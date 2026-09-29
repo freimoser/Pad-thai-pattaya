@@ -15,8 +15,8 @@ Deine Aufgabe: Erstelle eine komplette, moderne, mehrsprachige statische Website
 - SEO-optimiert (Open Graph, Schema.org/LocalBusiness, Sitemap, Robots.txt)
 
 ### Ziel-Ordner: `/data/pad-thai-pattaya/`
-Das Projekt wird später auf GitHub Pages deployed unter `Freemoser.github.io/pad-thai-pattaya/`
-→ Verwende `site: "https://Freemoser.github.io"` und `base: "/pad-thai-pattaya/"` in der Config
+Das Projekt wird später auf GitHub Pages deployed unter `freimoser.github.io/pad-thai-pattaya/`
+→ Verwende `site: "https://freimoser.github.io"` und `base: "/pad-thai-pattaya/"` in der Config
 
 ### Deployment:
 - GitHub Actions Workflow für Build & Deploy auf Pages (`.github/workflows/deploy.yml`)

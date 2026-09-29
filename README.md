@@ -4,7 +4,7 @@ Multilingual static site (DE / EN / TH) built with [Astro](https://astro.build) 
 
 ## Live
 
-https://Freemoser.github.io/pad-thai-pattaya/
+https://freimoser.github.io/pad-thai-pattaya/
 
 ## Develop
 

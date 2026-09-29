@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://Freemoser.github.io/pad-thai-pattaya/sitemap-index.xml
+Sitemap: https://freimoser.github.io/pad-thai-pattaya/sitemap-index.xml
